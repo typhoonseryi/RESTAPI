@@ -1,5 +1,5 @@
 import json
-from django.http import HttpResponse, JsonResponse, Http404
+from django.http import JsonResponse, Http404
 from django.views import View
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
@@ -12,29 +12,30 @@ ADD_SCHEMA = {
     "properties": {
         "title": {
             "type": "string",
-            "minLength": 1,
             "maxLength": 64
         },
         "description": {
             "type": "string",
-            "minLength": 1,
             "maxLength": 1024
         },
+        "params": {
+            "type": "object",
+        }
     },
     "required": ["title", "description", "params"],
 }
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class AddItemView(View):
+class AddShowItemsView(View):
 
     def post(self, request):
         try:
-            document = json.loads(request.body)
-            validate(document, ADD_SCHEMA)
-            i = Item.objects.create(title=document['title'],
-                                    description=document['description'],
-                                    params=document['params'],
+            doc = json.loads(request.body)
+            validate(doc, ADD_SCHEMA)
+            i = Item.objects.create(title=doc['title'],
+                                    description=doc['description'],
+                                    params=doc['params'],
                                     )
             i.save()
             return JsonResponse({'id': i.id}, status=201)
@@ -45,18 +46,18 @@ class AddItemView(View):
 
     def get(self, request):
 
-        flt = request.GET.get('filter')
+        doc = json.loads(request.body)
+        flt = doc.get('filter')
         if flt:
-            key, value = flt.split('=')
-            if key == 'title':
-                titles = [i.title for i in Item.objects.filter(title=value)]
-                return JsonResponse({'titles': titles}, status=201)
+            if flt.get('title'):
+                titles = [i.title for i in Item.objects.filter(title=flt['title'])]
+                return JsonResponse({'titles': titles}, status=200)
             else:
-                titles = [i.title for i in Item.objects.filter(params__contains={key: value})]
-                return JsonResponse({'titles': titles}, status=201)
+                titles = [i.title for i in Item.objects.filter(params=flt)]
+                return JsonResponse({'titles': titles}, status=200)
         else:
             titles = [i.title for i in Item.objects.all()]
-            return JsonResponse({'titles': titles}, status=201)
+            return JsonResponse({'titles': titles}, status=200)
 
 
 class GetItemView(View):
@@ -66,4 +67,7 @@ class GetItemView(View):
             i = Item.objects.get(pk=item_id)
         except Item.DoesNotExist:
             raise Http404
-        return JsonResponse({'title': i.title, 'description': i.description, 'params': i.params}, status=201)
+        return JsonResponse({'title': i.title,
+                             'description': i.description,
+                             'params': i.params,
+                             }, status=200)

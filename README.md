@@ -6,9 +6,11 @@
 # cURL-команды для проверки работы сервиса:
 ## 1) Создание товара:
 ### curl -d '{"title": "Samsung Galaxy A52", "description": "The new Galaxy A52 has a big 6.5-inch full-HD+ Super AMOLED display with a hole-punch display. It also has a fast 90Hz refresh rate.", "params": {"memory": 256, "cpu": "Snapdragon 720G", "performance": 2300}}' -H "Content-type: application/json" -X POST http://localhost:8000/api/v1/goods/
-## 2.1) Поиск товара по названию:
+## 2.1) Поиск товаров по названию:
 ### curl -d '{"filter": {"title": "Samsung Galaxy A52"}}' -H "Content-type: application/json" -X GET http://localhost:8000/api/v1/goods/
-## 2.2) Поиск товара по параметру:
+## 2.2) Поиск товаров по параметру:
 ### curl -d '{"filter": {"memory": 256}}' -H "Content-type: application/json" -X GET http://localhost:8000/api/v1/goods/
+## 2.3) Список всех товаров:
+### curl -X GET http://localhost:8000/api/v1/goods/
 ## 3) Получить детали товара (id=1):
 ### curl -X GET http://localhost:8000/api/v1/goods/1/

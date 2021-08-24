@@ -81,6 +81,24 @@ DATABASES = {
     }
 }
 
+# Validation schema for json
+ADD_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string",
+            "maxLength": 64
+        },
+        "description": {
+            "type": "string",
+            "maxLength": 1024
+        },
+        "params": {
+            "type": "object",
+        }
+    },
+    "required": ["title", "description", "params"],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

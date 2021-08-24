@@ -6,24 +6,7 @@ from jsonschema.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Item
-
-ADD_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "title": {
-            "type": "string",
-            "maxLength": 64
-        },
-        "description": {
-            "type": "string",
-            "maxLength": 1024
-        },
-        "params": {
-            "type": "object",
-        }
-    },
-    "required": ["title", "description", "params"],
-}
+from somemart.settings import ADD_SCHEMA
 
 
 @method_decorator(csrf_exempt, name='dispatch')

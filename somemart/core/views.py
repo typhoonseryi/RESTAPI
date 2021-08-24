@@ -6,7 +6,7 @@ from jsonschema.exceptions import ValidationError
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from .models import Item
-from somemart.settings import ADD_SCHEMA
+from somemart.settings import ADD_SCHEMA, SHOW_SCHEMA
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -29,18 +29,21 @@ class AddShowItemsView(View):
 
     def get(self, request):
 
-        doc = json.loads(request.body)
-        flt = doc.get('filter')
-        if flt:
+        try:
+            doc = json.loads(request.body)
+            validate(doc, SHOW_SCHEMA)
+            flt = doc['filter']
             if flt.get('title'):
                 titles = [i.title for i in Item.objects.filter(title=flt['title'])]
                 return JsonResponse({'titles': titles}, status=200)
             else:
                 titles = [i.title for i in Item.objects.filter(params=flt)]
                 return JsonResponse({'titles': titles}, status=200)
-        else:
+        except json.JSONDecodeError:
             titles = [i.title for i in Item.objects.all()]
             return JsonResponse({'titles': titles}, status=200)
+        except ValidationError as exc:
+            return JsonResponse({'errors': exc.message}, status=400)
 
 
 class GetItemView(View):

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%x^-sii56altmr*emppz4cnv8g^*m0k2c4g7akg6*ph4*1!(f$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost']
 
 
 # Application definition
@@ -98,6 +98,16 @@ ADD_SCHEMA = {
         }
     },
     "required": ["title", "description", "params"],
+}
+
+SHOW_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "filter": {
+            "type": "object",
+        },
+    },
+    "required": ["filter"]
 }
 
 # Password validation
